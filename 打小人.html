@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>赛博打小人 - 打卡发泄神仙站</title>
+    <style>
+        :root {
+            --bg-color: #0d0d1a;
+            --neon-pink: #ff2a74;
+            --neon-blue: #05d9e8;
+            --neon-yellow: #fffe03;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 100vh;
+            overflow: hidden;
+            /* 鼠标悬停在页面时变成一根小木棍/拍子，点击时用CSS控制更逼真 */
+            cursor: pointer;
+        }
+
+        /* 顶部区域 */
+        header {
+            text-align: center;
+            padding-top: 30px;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: var(--neon-pink);
+            text-shadow: 0 0 10px var(--neon-pink);
+            margin: 0 0 15px 0;
+            letter-spacing: 2px;
+        }
+
+        .input-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--neon-blue);
+            box-shadow: 0 0 10px rgba(5, 217, 232, 0.3);
+            border-radius: 30px;
+            padding: 10px 20px;
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+            text-align: center;
+            width: 80%;
+            max-width: 300px;
+            transition: all 0.3s;
+        }
+
+        .input-box:focus {
+            box-shadow: 0 0 20px var(--neon-blue);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* 中间核心：草人区域 */
+        .stage {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            position: relative;
+        }
+
+        /* 用纯CSS画出来的赛博像素小草人 */
+        .scarecrow {
+            width: 140px;
+            height: 200px;
+            position: relative;
+            transition: transform 0.05s;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://w3.org" width="32" height="32" viewBox="0 0 24 24"><text y="24" font-size="24">🩴</text></svg>'), pointer; /* 悬停在草人身上变成拖鞋 */
+        }
+
+        /* 稻草人头部 */
+        .scarecrow-head {
+            width: 60px;
+            height: 60px;
+            background: var(--neon-yellow);
+            border: 3px solid #fff;
+            box-shadow: 0 0 15px var(--neon-yellow);
+            border-radius: 50%;
+            margin: 0 auto;
+            position: relative;
+        }
+        /* 搞笑的死鱼眼 */
+        .scarecrow-head::before, .scarecrow-head::after {
+            content: 'x';
+            position: absolute;
+            top: 15px;
+            color: #000;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .scarecrow-head::before { left: 12px; }
+        .scarecrow-head::after { right: 12px; }
+
+        /* 稻草人身体 */
+        .scarecrow-body {
+            width: 16px;
+            height: 100px;
+            background: #ff5500;
+            margin: 0 auto;
+            border-radius: 4px;
+            position: relative;
+            box-shadow: 0 0 10px #ff5500;
+        }
+        /* 稻草人横向的木担（手臂） */
+        .scarecrow-body::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: -52px;
+            width: 120px;
+            height: 14px;
+            background: #ff5500;
+            border-radius: 4px;
+        }
+
+        /* 被打时的震动动画 */
+        .hit-shake {
+            animation: shake 0.1s infinite;
+        }
+
+        @keyframes shake {
+            0% { transform: translate(2px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(0px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(2px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(2px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+
+        /* 飘出的浮动发疯文字 */
+        .floating-text {
+            position: absolute;
+            font-weight: 900;
+            font-size: 20px;
+            pointer-events: none;
+            white-space: nowrap;
+            animation: floatUp 0.6s ease-out forwards;
+            text-shadow: 0 0 8px currentColor;
+        }
+
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translate(-50%, -50%) scale(0.8) translateY(0); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(1.3) translateY(-120px) rotate(10deg); }
+        }
+
+        /* 底部区域 */
+        footer {
+            text-align: center;
+            padding-bottom: 30px;
+            width: 100%;
+        }
+
+        .counter {
+            font-size: 18px;
+            color: #fff;
+            background: rgba(255,255,255,0.03);
+            padding: 8px 20px;
+            border-radius: 20px;
+            display: inline-block;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        #count-num {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--neon-pink);
+            text-shadow: 0 0 5px var(--neon-pink);
+            margin: 0 5px;
+        }
+        
+        .tip {
+            font-size: 12px;
+            color: #666;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>邪气消散·赛博打小人</h1>
+        <input type="text" class="input-box" id="target-input" value="无良主管" placeholder="输入你想打的代称...">
+    </header>
+
+    <div class="stage">
+        <div class="scarecrow" id="scarecrow">
+            <div class="scarecrow-head"></div>
+            <div class="scarecrow-body"></div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="counter">今日已宣泄<span id="count-num">0</span>次</div>
+        <div class="tip">💡 悬停在草人身上，疯狂左键点击发泄吧！支持手机触屏</div>
+    </footer>
+
+    <script>
+        var scarecrow = document.getElementById('scarecrow');
+        var countNum = document.getElementById('count-num');
+        var targetInput = document.getElementById('target-input');
+        var count = 0;
+
+        // 极具灵魂的粤语/发疯文学打小人词库
+        var incantations = [
+            "打你个口舌生疮！",
+            "打你个霉运退散！",
+            "打完小人走大运！",
+            "退！退！退！",
+            "升职加薪！",
+            "工资翻倍！",
+            "拒绝加班！",
+            "暴富安排上！",
+            "小人快滚粗！",
+            "斩断烂桃花！",
+            "今天就下班！",
+            "天天拿大奖！"
+        ];
+
+        var colors = ['#ff2a74', '#05d9e8', '#fffe03', '#00ff66', '#ff00ff'];
+
+        // 点击事件（完美支持电脑和手机）
+        function handleHit(e) {
+            count++;
+            countNum.innerText = count;
+
+            // 1. 触发草人剧烈震动样式
+            scarecrow.classList.add('hit-shake');
+            setTimeout(function() {
+                scarecrow.classList.remove('hit-shake');
+            }, 100);
+
+            // 2. 获取点击坐标并生成飘字
+            var targetName = targetInput.value.trim() || "小人";
+            var randomText = incantations[Math.floor(Math.random() * incantations.length)];
+            
+            // 拼接名字，变成 “打 [无良主管] 升职加薪！” 这种极具针对性的好玩文案
+            var finalText = "打【" + targetName + "】" + randomText;
+
+            var fText = document.createElement('div');
+            fText.className = 'floating-text';
+            fText.innerText = finalText;
+            
+            // 设置文字随机颜色
+            var randomColor = colors[Math.floor(Math.random() * colors.length)];
+            fText.style.color = randomColor;
+
+            // 定位飘字
+            var clientX = e.clientX || (e.touches && e.touches[0].clientX) || window.innerWidth / 2;
+            var clientY = e.clientY || (e.touches && e.touches[0].clientY) || window.innerHeight / 2;
+            
+            fText.style.left = clientX + 'px';
+            fText.style.top = clientY + 'px';
+
+            document.body.appendChild(fText);
+
+            // 动画结束后销毁文字节点
+            setTimeout(function() {
+                fText.remove();
+            }, 600);
+        }
+
+        // 绑定点击监听
+        scarecrow.addEventListener('mousedown', handleHit);
+        scarecrow.addEventListener('touchstart', function(e) {
+            e.preventDefault(); // 阻止手机双击缩放
+            handleHit(e);
+        });
+    </script>
+</body>
+</html>
